@@ -33,7 +33,18 @@ class Cell{
     }
 }
 
+//create games grid
+function createGrid(){
+    //cycle through cell positions
+    for(let y = cellSize; y < canvas.height; y+= cellSize){
+        for(let x = cellSize; x < canvas.width; x+= cellSize){
+            //Adds a new cell into grid array
+            gameGrid.push(new Cell(x,y));
 
+        }
+
+    }
+}
 
 //projectiles
 
