@@ -17,6 +17,24 @@ const controlsBar = {
     height: cellSize,
 }
 
+class Cell{
+    constructor(x, y){
+        //x coord
+        this.x = x;
+        //y coord
+        this.y = y;
+
+        this.width = cellSize;
+        this.height = cellSize;
+    }
+    draw(){
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+
+
 //projectiles
 
 //defenders
