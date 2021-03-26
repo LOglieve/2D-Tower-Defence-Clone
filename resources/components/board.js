@@ -3,9 +3,15 @@ import {mouse} from './helpers/mouse.js';
 
 
 export const canvas = document.getElementById("playingBoard");
+
+export const reCanvas = () => {
+    canvasPosition = canvas.getBoundingClientRect();
+}
+
 //ctx = context
 export const ctx = canvas.getContext('2d');
 export const cellSize = 100;
+export let canvasPosition = canvas.getBoundingClientRect();
 
 canvas.width = 900;
 canvas.height = 600;

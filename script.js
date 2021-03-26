@@ -1,7 +1,7 @@
-import {ctx, cellSize, canvas, controlsBar, createGrid, handleGameGrid} from './resources/components/board.js';
+import {ctx, cellSize, canvas, controlsBar, createGrid, handleGameGrid, canvasPosition, reCanvas} from './resources/components/board.js';
 import {collision} from './resources/components/helpers/collision.js';
 import {mouse} from './resources/components/helpers/mouse.js';
-import {defenders, defenderCost, Defender, handleDefenders} from './resources/components/entities/defender.js'
+import {inc, frame, defenders, defenderCost, Defender, handleDefenders, handleEnemies, gameLives} from './resources/components/entities/entities.js';
 
 
 //global variables
@@ -9,11 +9,8 @@ import {defenders, defenderCost, Defender, handleDefenders} from './resources/co
 const cellGap = 3;
 const gameGrid = [];
 const color = 'blue';
-
-//move later
 let numberOfResources = 300;
 
-let canvasPosition = canvas.getBoundingClientRect();
 canvas.addEventListener('mousemove', function(e){
     //set mouse coords
     //as canvas doesnt cover entired screen we offset using convasPotion variable
@@ -36,24 +33,36 @@ canvas.addEventListener('click', function(){
     //if controlsBar clicked
     if(gridPositionY < cellSize) return;
 
+
+    //check if cell is already occupied
+    for( let i = 0; i < defenders.length; i++){
+        if(defenders[i].x == gridPositionX && defender[i].y == gridPositionY) return;
+    }
+
     if(numberOfResources >= defenderCost){
         defenders.push(new Defender(gridPositionX,gridPositionY));
         numberOfResources -= defenderCost;
     }
 
 });
-//projectiles
-
-//enemies
-
-//resources
 
 //utilities
-
 function handleGameStatus(){
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = 'white';
     ctx.font = '30px Arial';
     ctx.fillText('Resources:' + numberOfResources, 50, 50);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '30px Arial';
+    ctx.fillText('Lives:' + gameLives, 500, 50);
+
+
+
+    if(gameLives <= 0){
+        ctx.fillStyle = 'black',
+        ctx.font = '90px Arial',
+        ctx.fillText('GAME OVER', 135, 330);
+    }
 }
 
 //calls createGrid function to draw the grid
@@ -63,7 +72,7 @@ createGrid(gameGrid);
 function animate(){
 
     //resets position incase of window rezizing / moving
-    canvasPosition = canvas.getBoundingClientRect();
+    reCanvas();
     
     //deselects / clears cells so only one is selected at once
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -75,11 +84,20 @@ function animate(){
     //redraws all cells
     handleGameGrid(gameGrid, mouse);
     handleDefenders();
-    handleGameStatus();
-
+    handleEnemies();
     
+    
+    
+    inc();
+    console.log(frame);
+    
+
+    handleGameStatus();
     //will run and call itself - recursion
-    requestAnimationFrame(animate);
+    if(!gameLives == 0){
+        requestAnimationFrame(animate);
+
+    }
 }
 animate();
 
