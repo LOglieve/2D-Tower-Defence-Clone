@@ -1,16 +1,37 @@
 import {ctx, cellSize, canvas, controlsBar, createGrid, handleGameGrid, canvasPosition, reCanvas} from './resources/components/board.js';
 import {collision} from './resources/components/helpers/collision.js';
 import {mouse} from './resources/components/helpers/mouse.js';
-import {inc, frame, defenders, defenderCost, Defender, handleDefenders, handleEnemies, gameLives} from './resources/components/entities/entities.js';
-
+import {inc, frame, defenders, defenderCost, Defender, gameLives, resetEntities, calcLargest, handleEntities} from './resources/components/entities/entities.js';
 
 //global variables
 //const cellSize = 100;
 const cellGap = 3;
-const gameGrid = [];
+let gameGrid = [];
 const color = 'blue';
 let numberOfResources = 300;
 
+
+//button stuff
+const pauseButton = document.getElementById("pauseBtn");
+const againButton = document.getElementById("againBtn");
+let paused = false;
+
+pauseButton.addEventListener('click', () => {
+    paused = !paused;
+    if(!paused){
+        animate();
+    }
+
+});
+
+console.log(calcLargest(1,1,2));
+console.log(calcLargest(1,1,2));
+console.log(calcLargest(3,3,2));
+console.log(calcLargest(4,2,4));
+
+
+
+//canvas eventListeners
 canvas.addEventListener('mousemove', function(e){
     //set mouse coords
     //as canvas doesnt cover entired screen we offset using convasPotion variable
@@ -36,11 +57,11 @@ canvas.addEventListener('click', function(){
 
     //check if cell is already occupied
     for( let i = 0; i < defenders.length; i++){
-        if(defenders[i].x == gridPositionX && defender[i].y == gridPositionY) return;
+        if(defenders[i].x == gridPositionX && defenders[i].y == gridPositionY) return;
     }
 
     if(numberOfResources >= defenderCost){
-        defenders.push(new Defender(gridPositionX,gridPositionY));
+        defenders.push(new Defender(gridPositionX,gridPositionY, 100));
         numberOfResources -= defenderCost;
     }
 
@@ -71,6 +92,11 @@ createGrid(gameGrid);
 //main animation loop - constatly drawn and deleted
 function animate(){
 
+    againButton.addEventListener('click', () =>{
+        resetEntities();
+        numberOfResources = 300;
+    })
+
     //resets position incase of window rezizing / moving
     reCanvas();
     
@@ -83,21 +109,21 @@ function animate(){
     ctx.fillRect(0, 0, controlsBar.width, controlsBar.height);
     //redraws all cells
     handleGameGrid(gameGrid, mouse);
-    handleDefenders();
-    handleEnemies();
+    handleEntities();
     
     
     
     inc();
-    console.log(frame);
     
 
     handleGameStatus();
     //will run and call itself - recursion
-    if(!gameLives == 0){
+    if(!gameLives == 0 && !paused){
         requestAnimationFrame(animate);
 
     }
+
+
 }
 animate();
 
